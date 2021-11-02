@@ -8,7 +8,7 @@ import {
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
-const Chat = ({ user }) => {
+function useChatMessages() {
   const { data } = useQuery(messagesQuery);
   const messages = data ? data.messages : [];
   useSubscription(messageAddedSubscription, {
@@ -25,15 +25,21 @@ const Chat = ({ user }) => {
   const [addMessage, { loading, error, data, called }] =
     useMutation(addMessageMutation);
 
+  return {
+    messages,
+    addMessage: (text) => addMessage({ variables: { input: { text } } }),
+  };
+}
+
+const Chat = ({ user }) => {
+  const { messages, addMessage } = useChatMessages();
+
   // see the latest message from the subscription
   // const { loading, error, data } = useQuery(messagesQuery);
   // const {data} = useSubscription(messageAddedSubscription)
   // const [addMessage, {loading, error, data, called}] = useMutation(addMessageMutation);
   // const messages = data ?[ data.messagesAdded] : [];
 
-  const handleSend = async (text) => {
-    await addMessage({ variables: { input: { text } } });
-  };
 
   // if(loading) return <Spinner />
   // if(error) return <Error />
@@ -42,7 +48,7 @@ const Chat = ({ user }) => {
       <div className="container">
         <h1 className="title">Chatting as {user}</h1>
         <MessageList user={user} messages={messages} />
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={addMessage} />
       </div>
     </section>
   );
