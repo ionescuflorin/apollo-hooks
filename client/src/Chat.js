@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   addMessageMutation,
   messageAddedSubscription,
@@ -9,13 +9,17 @@ import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
 const Chat = ({ user }) => {
-  const [messages, setMessages] = useState([]);
-  useQuery(messagesQuery, {
-    onCompleted: (data) => setMessages(data.messages),
-  });
+  const { data } = useQuery(messagesQuery);
+  const messages = data ? data.messages : [];
   useSubscription(messageAddedSubscription, {
-    onSubscriptionData: ({ subscriptionData }) => {
-      setMessages(messages.concat(subscriptionData.data.messageAdded));
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      // setMessages(messages.concat(subscriptionData.data.messageAdded));
+      // we're writting on the apollo cache "client.cache"
+      client.writeData({
+        data: {
+          messages: messages.concat(subscriptionData.data.messageAdded),
+        },
+      });
     },
   });
   const [addMessage, { loading, error, data, called }] =
