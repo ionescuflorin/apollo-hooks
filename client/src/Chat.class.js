@@ -8,6 +8,7 @@ class Chat extends Component {
   subscription = null;
 
   async componentDidMount() {
+    // instead we'll use useQuery
     const messages = await getMessages();
     this.setState({messages});
     this.subscription = onMessageAdded((message) => {
@@ -22,6 +23,7 @@ class Chat extends Component {
   }
 
   async handleSend(text) {
+    // instead we'll use useMutatuin
     await addMessage(text);
   }
 

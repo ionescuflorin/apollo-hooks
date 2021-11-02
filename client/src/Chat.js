@@ -1,15 +1,16 @@
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import React from 'react';
-import { messagesQuery } from './graphql/queries';
+import { addMessageMutation, messagesQuery } from './graphql/queries';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
 const Chat = ({ user }) => {
   const { loading, error, data } = useQuery(messagesQuery);
+  const [addMessage, {loading, error, data, called}] = useMutation(addMessageMutation);
   const messages = data ? data.messages : [];
 
-  const handleSend = (text) => {
-    // TODO MUTATION
+  const handleSend = async (text) => {
+    await addMessage({ variables: { input: { text } } });
   };
 
   // if(loading) return <Spinner />
