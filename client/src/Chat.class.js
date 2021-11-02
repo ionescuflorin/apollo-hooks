@@ -11,6 +11,7 @@ class Chat extends Component {
     // instead we'll use useQuery
     const messages = await getMessages();
     this.setState({messages});
+    // instead we'll use useSubscriitpion
     this.subscription = onMessageAdded((message) => {
       this.setState({messages: this.state.messages.concat(message)});
     })
